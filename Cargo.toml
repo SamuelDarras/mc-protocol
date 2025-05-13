@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.98"
 dotenvy = "0.15.7"
 json = "0.12.4"
 oauth2 = {version = "5.0.0", features = ["reqwest-blocking"]}
+regex = "1.11.1"
 reqwest = "0.12.15"
 rouille = "3.6.2"

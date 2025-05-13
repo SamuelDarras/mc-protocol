@@ -1,6 +1,7 @@
+use anyhow::Result;
 use json::object;
 
-pub fn minecraft(uhs: String, token: String) -> (String, String) {
+pub fn minecraft(uhs: String, token: String) -> Result<(String, String)> {
     let client = reqwest::blocking::Client::new();
 
     let identity_token = format!("XBL3.0 x={uhs};{token}");
@@ -15,15 +16,16 @@ pub fn minecraft(uhs: String, token: String) -> (String, String) {
             }
             .to_string(),
         )
-        .build()
-        .unwrap();
+        .build()?;
 
-    let result = client.execute(request).unwrap();
+    let result = client.execute(request)?;
     println!("{result:?}");
-    let json_result = json::parse(result.text().unwrap().as_str()).unwrap();
+    let mut json_result = json::parse(result.text()?.as_str())?;
 
-    let mut token = json_result["access_token"].clone();
-    let mut uuid = json_result["username"].clone();
+    let token = json_result["access_token"]
+        .take_string()
+        .unwrap_or_default();
+    let uuid = json_result["username"].take_string().unwrap_or_default();
 
-    (token.take_string().unwrap(), uuid.take_string().unwrap())
+    Ok((token, uuid))
 }
